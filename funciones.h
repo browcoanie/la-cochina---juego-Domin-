@@ -44,6 +44,102 @@ struct Juego {
     int turnoActual;       //  Para saber a quien le toca
 };
 
+// =====================================================
+// FUNCIONES PARA PILA (MANO DE JUGADORES)
+// =====================================================
+
+// Inicializa una pila vacía
+inline void crearPila(pilasFicha &pila) {
+    pila.tope = nullptr;
+}
+
+// Verifica si la pila está vacía
+inline bool pilaVacia(pilasFicha pila) {
+    return pila.tope == nullptr;
+}
+
+// Inserta una ficha en el tope de la pila
+inline void insertarFichaPila(pilasFicha &pila, Ficha ficha) {
+    NodoFicha *nuevaFicha = new NodoFicha;
+    nuevaFicha->ficha = ficha;
+    nuevaFicha->siguiente = pila.tope;
+    pila.tope = nuevaFicha;
+}
+
+// Saca la ficha de arriba de la pila
+inline Ficha sacarFichaPila(pilasFicha &pila) {
+    if (pilaVacia(pila)) {
+        Ficha fichaVacia = {-1, -1};
+        return fichaVacia;
+    }
+
+    NodoFicha *fichaEliminar = pila.tope;
+    Ficha fichaRobada = fichaEliminar->ficha;
+
+    pila.tope = pila.tope->siguiente;
+
+    delete fichaEliminar;
+
+    return fichaRobada;
+}
+
+// Mira la ficha del tope sin sacarla
+inline Ficha verTopePila(pilasFicha pila) {
+    if (pilaVacia(pila)) {
+        Ficha fichaVacia = {-1, -1};
+        return fichaVacia;
+    }
+    return pila.tope->ficha;
+}
+
+// Cuenta cuántas fichas hay en una pila
+inline int contarFichasEnPila(pilasFicha pila) {
+    int total = 0;
+    NodoFicha *actual = pila.tope;
+
+    while (actual != nullptr) {
+        total++;
+        actual = actual->siguiente;
+    }
+    return total;
+}
+
+// Busca una ficha específica en la pila y la saca
+inline bool sacarFichaEspecifica(pilasFicha &pila, int lado1, int lado2, Ficha &fichaEncontrada) {
+    if (pilaVacia(pila)) {
+        return false;
+    }
+
+    pilasFicha pilaAux;
+    crearPila(pilaAux);
+    bool encontrada = false;
+
+    while (!pilaVacia(pila) && !encontrada) {
+        Ficha actual = sacarFichaPila(pila);
+
+        if ((actual.lado1 == lado1 && actual.lado2 == lado2) ||
+            (actual.lado1 == lado2 && actual.lado2 == lado1)) {
+            fichaEncontrada = actual;
+            encontrada = true;
+        } else {
+            insertarFichaPila(pilaAux, actual);
+        }
+    }
+
+    while (!pilaVacia(pilaAux)) {
+        Ficha temp = sacarFichaPila(pilaAux);
+        insertarFichaPila(pila, temp);
+    }
+
+    return encontrada;
+}
+
+// Libera toda la memoria de una pila
+inline void limpiarPila(pilasFicha &pila) {
+    while (!pilaVacia(pila)) {
+        sacarFichaPila(pila);
+    }
+}
 
 
 #endif
