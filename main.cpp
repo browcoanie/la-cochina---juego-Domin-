@@ -12,7 +12,17 @@ int main(){
     // 1. crear estructuras
     Juego miJuego;
     Mesa mesa;
+    
+    // 2.Inicializar
+    crearCola(miJuego.pozo);
+    initMesa(mesa);
+    
+    // Semilla aleatoria
+    srand(time(0));
 
+    // Bienvenida
+    cout << "🎲 BIENVENIDO AL JUEGO DE DOMINÓ 🎲" << endl;
+    cout << "===================================" << endl;
 
 
 
