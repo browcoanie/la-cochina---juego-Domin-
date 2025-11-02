@@ -248,4 +248,34 @@ bool jugarTurno(Juego &juego, Mesa &mesa) {
     } // Fin while(true)
 }
 
+    // FUNCIONES DE CONFIGURACIÓN DE JUEGO
+
+// Pide los datos de los jugadores
+void configurarJugadores(Juego &juego) {
+    // Bucle para validar el numero de jugadores
+    while (true) {
+        std::cout << "¿Cuántos jugadores van a jugar? (2-4): ";
+        if (!(std::cin >> juego.numJugadores)) {
+            std::cout << "❌ Error: Debes ingresar un NÚMERO." << std::endl;
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+            continue;
+        }
+        if (juego.numJugadores >= 2 && juego.numJugadores <= 4) {
+            break; // Numero valido, salimos
+        } else {
+            std::cout << "❌ Opción inválida. Tiene que ser entre 2 y 4 jugadores." << std::endl;
+        }
+    }
+
+    // Pide nombres y crea sus pilas vacias
+    for(int i = 0; i < juego.numJugadores; i++) {
+        std::cout << "Nombre del jugador " << (i + 1) << ": ";
+        std::cin >> juego.jugadores[i].nombre;
+        crearPila(juego.jugadores[i].mano);
+        juego.jugadores[i].puntos = 0; // Puntos en contra empiezan en 0
+        juego.jugadores[i].paso = false;
+    }
+}
+
 #endif
