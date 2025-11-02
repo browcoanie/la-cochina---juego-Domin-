@@ -248,7 +248,7 @@ bool jugarTurno(Juego &juego, Mesa &mesa) {
     } // Fin while(true)
 }
 
-    // FUNCIONES DE CONFIGURACIÓN DE JUEGO
+// FUNCIONES DE CONFIGURACIÓN DE JUEGO
 
 // Pide los datos de los jugadores
 void configurarJugadores(Juego &juego) {
