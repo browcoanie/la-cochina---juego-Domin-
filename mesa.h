@@ -4,6 +4,15 @@
 #include "funciones.h"
 
 
+// truco para limpiar la consola
+inline void limpiarConsola() {
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
 // ESTRUCTURAS PARA LA MESA (LISTA DOBLEMENTE ENLAZADA)
 
 

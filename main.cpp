@@ -6,6 +6,7 @@
 #include "mesa.h"
 #include "turnos.h"
 #include <windows.h>
+using namespace std;
 
 
 int main(){
@@ -14,7 +15,7 @@ int main(){
     Mesa mesa;
     
     // 2.Inicializar
-    crearCola(miJuego.pozo);
+    crearPila(miJuego.pozo);
     initMesa(mesa);
     
     // Semilla aleatoria
