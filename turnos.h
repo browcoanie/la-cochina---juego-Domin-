@@ -2,7 +2,7 @@
 #define TURNOS_H
 
 #include "funciones.h"
-#include "mesa.h"
+#include "utility.h"
 #include <iostream>
 #include <string>
 
@@ -42,22 +42,32 @@ void mostrarMesa(const Mesa &mesa) {
     std::cout << "  (Izq:" << valueLeft(mesa) << " | Der:" << valueRight(mesa) << ")" << std::endl;
 }
 
-//FUNCIONES AUXILIARES DE JUEGO
-Ficha verFichaPorPosicion(pilasFicha pila, int posicion) {
-    NodoFicha* actual = pila.tope;
+
+// FUNCIONES AUXILIARES DE JUEGO
+
+// NUEVA FUNCION "ESPIA"
+// Solo "ve" la ficha en la posición, PERO NO LA SACA.
+// Esto arregla el bug de que la mano se desordenaba.
+Ficha verFichaPorPosicion(pilasFicha mano, int posicion) {
+    NodoFicha *actual = mano.tope;
     int contador = 1;
     
-    while (actual != nullptr) {
-        if (contador == posicion) {
-            return actual->ficha;
-        }
+    // 1. buscar la ficha en esa posicion
+    while (actual != nullptr && contador < posicion) {
         actual = actual->siguiente;
         contador++;
     }
     
-    Ficha fichaVacia = {-1, -1}; // Indicador de ficha no encontrada
-    return fichaVacia;
+    // si el num no existe
+    if (actual == nullptr) {
+        Ficha fichaInvalida = {-1, -1};
+        return fichaInvalida;
+    }
+    
+    // Devuelve la ficha, NO la saca
+    return actual->ficha;
 }
+
 
 // FUNCIÓN PRINCIPAL DE TURNO
 bool jugarTurno(Juego &juego, Mesa &mesa) {
@@ -108,7 +118,8 @@ bool jugarTurno(Juego &juego, Mesa &mesa) {
             return false; // Termina el turno
         }
     }
-// 5. BUCLE DE ACCION (para no perder turno si se equivoca)
+    
+    // 5. BUCLE DE ACCION (para no perder turno si se equivoca)
     jugadorActual.paso = false; 
     
     while (true) {
@@ -188,12 +199,12 @@ bool jugarTurno(Juego &juego, Mesa &mesa) {
                     }
                 }
 
-    
+                // --- EXITO! ---
                 std::cout << "✅ ¡Ficha colocada!" << std::endl;
                 
                 // 2. AHORA SÍ, sacamos la ficha de la mano
-                Ficha fichaTemp; // variable temporal, no importa
-                sacarFichaEspecifica(jugadorActual.mano, fichaAJugar.lado1, fichaAJugar.lado2, fichaTemp);
+                Ficha fichaDummy; // variable temporal, no importa
+                sacarFichaEspecifica(jugadorActual.mano, fichaAJugar.lado1, fichaAJugar.lado2, fichaDummy);
                 
                 // 3. GANO!
                 if (pilaVacia(jugadorActual.mano)) {
@@ -248,9 +259,10 @@ bool jugarTurno(Juego &juego, Mesa &mesa) {
     } // Fin while(true)
 }
 
+
 // FUNCIONES DE CONFIGURACIÓN DE JUEGO
 
-// Pide los datos de los jugadores
+// Pide los datos de los jugadores (¡CON VALIDACIÓN!)
 void configurarJugadores(Juego &juego) {
     // Bucle para validar el numero de jugadores
     while (true) {
@@ -277,5 +289,18 @@ void configurarJugadores(Juego &juego) {
         juego.jugadores[i].paso = false;
     }
 }
+
+// reparte 7 a cada uno
+void repartirFichas(Juego &juego) {
+    std::cout << "\n🎴 Repartiendo fichas..." << std::endl;
+    for(int jugador = 0; jugador < juego.numJugadores; jugador++) {
+        for(int ficha = 0; ficha < 7; ficha++) {
+            Ficha fichaRobada = sacarFichaPila(juego.pozo);
+            insertarFichaPila(juego.jugadores[jugador].mano, fichaRobada);
+        }
+    }
+    std::cout << "✅ ¡Fichas repartidas! Cada jugador tiene 7 fichas." << std::endl;
+}
+
 
 #endif
