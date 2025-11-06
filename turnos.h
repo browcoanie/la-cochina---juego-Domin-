@@ -2,7 +2,7 @@
 #define TURNOS_H
 
 #include "funciones.h"
-#include "utility.h"
+#include "mesa.h"
 #include <iostream>
 #include <string>
 
@@ -301,6 +301,8 @@ void repartirFichas(Juego &juego) {
     }
     std::cout << "✅ ¡Fichas repartidas! Cada jugador tiene 7 fichas." << std::endl;
 }
+
+
 
 
 #endif
