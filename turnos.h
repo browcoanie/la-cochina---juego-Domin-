@@ -278,18 +278,4 @@ void configurarJugadores(Juego &juego) {
     }
 }
 
-// reparte 7 a cada uno
-void repartirFichas(Juego &juego) {
-    std::cout << "\n🎴 Repartiendo fichas..." << std::endl;
-    for(int jugador = 0; jugador < juego.numJugadores; jugador++) {
-        for(int ficha = 0; ficha < 7; ficha++) {
-            Ficha fichaRobada = sacarFichaPila(juego.pozo);
-            insertarFichaPila(juego.jugadores[jugador].mano, fichaRobada);
-        }
-    }
-    std::cout << "✅ ¡Fichas repartidas! Cada jugador tiene 7 fichas." << std::endl;
-}
-
-// FUNCIONES DE CONTROL DE FLUJO
-
 #endif
