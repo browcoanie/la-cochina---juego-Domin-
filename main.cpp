@@ -25,8 +25,11 @@ int main(){
     cout << "🎲 BIENVENIDO AL JUEGO DE DOMINÓ 🎲" << endl;
     cout << "===================================" << endl;
 
+    // 4. Configurar jugadores (con validacion)
+    configurarJugadores(miJuego);
 
-
+    // 5. Configurar puntaje (ELIMINADO - AHORA SON 3 RONDAS)
+    limpiarConsola(); // limpiamos antes de empezar
 
 
 
