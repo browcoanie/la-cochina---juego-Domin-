@@ -398,5 +398,77 @@ void iniciarRonda(Juego &juego, Mesa &mesa, int ganadorRondaAnterior) {
     }
 }
 
+// bucle de una ronda (turno tras turno) (CAMBIO: Lógica de Puntuación)
+int jugarRonda(Juego &juego, Mesa &mesa) {
+    bool hayGanador = false;
+    int turnosSinJugar = 0; // para la "tranca"
+    
+    while (!hayGanador) {
+        // 1. jugar turno
+        hayGanador = jugarTurno(juego, mesa);
+        
+        // 2. si no gano...
+        if (!hayGanador) {
+            
+            // revisamos si paso (para la tranca)
+            if (juego.jugadores[juego.turnoActual].paso) {
+                turnosSinJugar++; 
+                
+                // si todos pasaron == TRANCA
+                if (turnosSinJugar >= juego.numJugadores) {
+                    std::cout << "\n🚫 ¡JUEGO TRANCADO! Nadie puede jugar." << std::endl;
+                    
+                    std::cout << "\n📋 Puntos en mano de cada jugador:"<< std::endl;
+                    for (int i = 0; i < juego.numJugadores; i++)
+                    {
+                        int puntosEnMano = calcularPuntosManos(juego.jugadores[i].mano);
+                        std::cout << "  " << juego.jugadores[i].nombre << ": " << puntosEnMano << " puntos" << std::endl;
+                    }
+
+                    // buscamos ganador por puntos (el que tiene MENOS)
+                    int ganadorTranca = encontrarGanadorPorTranca(juego);
+                    std::cout << "\n🏆 Gana la ronda por tener menos puntos: " << juego.jugadores[ganadorTranca].nombre << std::endl;
+
+                    // --- NUEVA LÓGICA DE PUNTOS ---
+                    // Todos suman los puntos que tienen en la mano
+                    std::cout << "\nSumando puntos (en contra) a todos los jugadores..." << std::endl;
+                    for(int i = 0; i < juego.numJugadores; i++) {
+                        int puntosMano = calcularPuntosManos(juego.jugadores[i].mano);
+                        juego.jugadores[i].puntos += puntosMano; // Suma a su cuenta particular
+                        std::cout << "  " << juego.jugadores[i].nombre << " suma " << puntosMano << " puntos." << std::endl;
+                    }
+                    return ganadorTranca; // se acabo la ronda
+                }
+            } else {
+                turnosSinJugar = 0; // alguien jugo, resetea el contador
+            }
+            
+            siguienteTurno(juego);
+            
+            // Pausa
+            std::cout << "\nPresiona ENTER para continuar...";
+            std::cin.ignore();
+            std::cin.get();
+        } else {
+            // ¡Hubo un ganador! (se quedo sin fichas)
+            int ganador = juego.turnoActual;
+
+            // --- NUEVA LÓGICA DE PUNTOS ---
+            // Todos los PERDEDORES suman los puntos de sus manos
+            std::cout << "\nSumando puntos (en contra) a los perdedores..." << std::endl;
+            for(int i = 0; i < juego.numJugadores; i++) {
+                if (i == ganador) continue; // El ganador no suma puntos
+                
+                int puntosMano = calcularPuntosManos(juego.jugadores[i].mano);
+                juego.jugadores[i].puntos += puntosMano; // Suma a su cuenta particular
+                std::cout << "  " << juego.jugadores[i].nombre << " suma " << puntosMano << " puntos." << std::endl;
+            }
+            return ganador; // se acabo la ronda
+        }
+    }
+    return -1; // no deberia llegar aqui
+}
+
+
 
 #endif
