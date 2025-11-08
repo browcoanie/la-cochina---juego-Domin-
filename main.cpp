@@ -31,8 +31,18 @@ int main(){
     // 5. Configurar puntaje (ELIMINADO - AHORA SON 3 RONDAS)
     limpiarConsola(); // limpiamos antes de empezar
 
-
-
-
+    // 6. la funcion que hace todo (CAMBIO: sin puntaje)
+    jugarPartidaCompleta(miJuego, mesa);
+    
+    // 7. IMPORTANTE: Limpiar memoria (delete)
+    cout << "\n🧹 Limpiando memoria..." << endl;
+    limpiarPila(miJuego.pozo);
+    for(int i = 0; i < miJuego.numJugadores; i++) {
+        limpiarPila(miJuego.jugadores[i].mano); // limpiar manos
+    }
+    clearMesa(mesa); // limpiar mesa
+    
+    cout << "\n¡Gracias por jugar! Hasta la próxima 👋" << endl;
+    
     return 0;
 }
