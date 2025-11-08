@@ -507,5 +507,79 @@ int encontrarGanadorFinal (Juego &juego){
     return ganador;
 }
 
+// Bucle principal (CAMBIO: ahora son 3 rondas)
+void jugarPartidaCompleta(Juego &juego, Mesa &mesa){
+    int ganadorRondaAnterior = -1; // -1 significa "primera ronda"
+    
+    std::cout << "\n🎮 ¡COMIENZA LA PARTIDA!" << std::endl;
+    std::cout << "🎯 Se jugarán 3 rondas. ¡El que tenga MENOS puntos al final, gana!" << std::endl;
+
+    // Bucle principal: Juega exactamente 3 rondas
+    for (int numeroRonda = 1; numeroRonda <= 3; numeroRonda++)
+    {
+        std::cout << "\n" << std::string(60, '=') << std::endl;
+        std::cout << "           RONDA " << numeroRonda << " / 3" << std::endl;
+        std::cout << std::string(60, '=') << std::endl;
+        
+        // Prepara la ronda (y le dice quién empieza)
+        iniciarRonda(juego, mesa, ganadorRondaAnterior);
+
+        std::cout << "\nPRESIONA ENTER para empezar la ronda...";
+        std::cin.ignore();
+        std::cin.get();
+
+        // Juega la ronda
+        int ganadorRonda = jugarRonda(juego, mesa);
+        ganadorRondaAnterior = ganadorRonda; // Guarda al ganador para la prox ronda
+
+        // Muestra el resumen
+        mostrarResumenRonda(juego, numeroRonda, ganadorRonda);
+
+        // Si no es la última ronda, pausa
+        if (numeroRonda < 3) {
+            std::cout << "\nPresiona ENTER para continuar a la siguiente ronda...";
+            std::cin.ignore();
+            std::cin.get();
+        }
+    }
+
+    // --- FIN DE PARTIDA ---
+    std::cout << "\n" << std::string(60, '=') << std::endl;
+    std::cout << "        🎊 FIN DE LA PARTIDA 🎊" << std::endl;
+    std::cout << std::string(60, '=') << std::endl;
+
+    int ganadorFinal = encontrarGanadorFinal(juego); // Busca al de MENOS puntos
+
+    std::cout << "\n🏆🏆🏆 ¡GANADOR FINAL: " << juego.jugadores[ganadorFinal].nombre << "! 🏆🏆🏆" << std::endl;
+    std::cout << "🌟 Puntuación final: " << juego.jugadores[ganadorFinal].puntos << " puntos" << std::endl;
+
+    // Mostrar clasificacion
+    std::cout << "\n📊 CLASIFICACIÓN FINAL (Menos es mejor):" << std::endl;
+    std::cout << std::string(40, '-') << std::endl;
+    
+    // burbuja simple para ordenar (CAMBIO: de MENOR a mayor)
+    for (int i = 0; i < juego.numJugadores - 1; i++) {
+        for (int j = 0; j < juego.numJugadores - i - 1; j++) {
+            if (juego.jugadores[j].puntos > juego.jugadores[j + 1].puntos) { // Se usa >
+                Jugador temp = juego.jugadores[j];
+                juego.jugadores[j] = juego.jugadores[j + 1];
+                juego.jugadores[j + 1] = temp;
+            }
+        }
+    }
+
+    // imprimir con medallas
+    for (int i = 0; i < juego.numJugadores; i++) {
+        std::cout << (i + 1) << ". " << juego.jugadores[i].nombre << ": " 
+             << juego.jugadores[i].puntos << " puntos";
+        if (i == 0) std::cout << " 🥇";
+        else if (i == 1) std::cout << " 🥈";
+        else if (i == 2) std::cout << " 🥉";
+        std::cout << std::endl;
+    }
+    std::cout << std::string(40, '-') << std::endl;
+    std::cout << "\nTotal de rondas jugadas: 3" << std::endl;
+}
+
 
 #endif
