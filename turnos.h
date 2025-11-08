@@ -302,7 +302,101 @@ void repartirFichas(Juego &juego) {
     std::cout << "✅ ¡Fichas repartidas! Cada jugador tiene 7 fichas." << std::endl;
 }
 
+// FUNCIONES DE CONFIGURACIÓN DE JUEGO
 
+// Pide los datos de los jugadores (¡CON VALIDACIÓN!)
+void configurarJugadores(Juego &juego) {
+    while (true) {
+        std::cout << "¿Cuántos jugadores van a jugar? (2-4): ";
+        if (!(std::cin >> juego.numJugadores)) {
+            std::cout << "❌ Error: Debes ingresar un NÚMERO." << std::endl;
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+            continue;
+        }
+        if (juego.numJugadores >= 2 && juego.numJugadores <= 4) {
+            break; // Numero valido, salimos
+        } else {
+            std::cout << "❌ Opción inválida. Tiene que ser entre 2 y 4 jugadores." << std::endl;
+        }
+    }
+
+    for(int i = 0; i < juego.numJugadores; i++) {
+        std::cout << "Nombre del jugador " << (i + 1) << ": ";
+        std::cin >> juego.jugadores[i].nombre;
+        crearPila(juego.jugadores[i].mano);
+        juego.jugadores[i].puntos = 0; // Puntos en contra empiezan en 0
+        juego.jugadores[i].paso = false;
+    }
+}
+
+// reparte 7 a cada uno
+void repartirFichas(Juego &juego) {
+    std::cout << "\n🎴 Repartiendo fichas..." << std::endl;
+    for(int jugador = 0; jugador < juego.numJugadores; jugador++) {
+        for(int ficha = 0; ficha < 7; ficha++) {
+            Ficha fichaRobada = sacarFichaPila(juego.pozo);
+            insertarFichaPila(juego.jugadores[jugador].mano, fichaRobada);
+        }
+    }
+    std::cout << "✅ ¡Fichas repartidas! Cada jugador tiene 7 fichas." << std::endl;
+}
+
+// FUNCIONES DE CONTROL DE FLUJO
+
+// Prepara la ronda (CAMBIO: ahora recibe quién ganó la ronda anterior)
+void iniciarRonda(Juego &juego, Mesa &mesa, int ganadorRondaAnterior) {
+    // 1. Limpiar todo
+    limpiarPila(juego.pozo);
+    clearMesa(mesa);
+    
+    for(int i = 0; i < juego.numJugadores; i++) {
+        limpiarPila(juego.jugadores[i].mano);
+        juego.jugadores[i].paso = false;
+    }
+    
+    // 2. crear y barajar pozo
+    generarTodasLasFichas(juego.pozo);
+    mezclarPozo(juego.pozo);
+    
+    // 3. repartir
+    repartirFichas(juego);
+    
+    // 4. Vemos quién empieza (¡NUEVA LÓGICA!)
+    if (ganadorRondaAnterior == -1) {
+        // Es la RONDA 1, usa la lógica del doble más alto
+        int fichaDobleInicial = -1;
+        int indiceJugadorInicial = determinarQuienEmpieza(juego, fichaDobleInicial);
+        juego.turnoActual = indiceJugadorInicial; 
+        
+        std::cout << "\n🎮 El primer jugador es: " << juego.jugadores[indiceJugadorInicial].nombre << std::endl;
+
+        if (fichaDobleInicial >= 0) {
+            // tiene un doble, lo juega
+            std::cout << "💎 ¡Empieza colocando la ficha doble [" << fichaDobleInicial << "|" << fichaDobleInicial << "]!" << std::endl;
+
+            Ficha fichaInicio;
+            sacarFichaEspecifica(
+                juego.jugadores[indiceJugadorInicial].mano,
+                fichaDobleInicial, 
+                fichaDobleInicial, 
+                fichaInicio
+            );
+            placeLeft(mesa, fichaInicio); // la ponemos
+            siguienteTurno(juego); // IMPORTANTE: pasa el turno
+            std::cout << "Turno inicial completado. Ahora le toca a: " << juego.jugadores[juego.turnoActual].nombre << std::endl;
+
+        } else {
+            // no hay dobles, empieza normal
+            std::cout << "(No hay fichas dobles, el juego empieza normal)" << std::endl;
+            std::cout << "Le toca a: " << juego.jugadores[juego.turnoActual].nombre << std::endl;
+        }
+    } else {
+        // Es la RONDA 2 o 3, empieza el ganador anterior
+        juego.turnoActual = ganadorRondaAnterior;
+        std::cout << "\n🎮 Empieza el ganador de la ronda anterior: " << juego.jugadores[juego.turnoActual].nombre << std::endl;
+    }
+}
 
 
 #endif
