@@ -469,5 +469,43 @@ int jugarRonda(Juego &juego, Mesa &mesa) {
     return -1; // no deberia llegar aqui
 }
 
+// PARTIDA COMPLETA (SE REPITEN LAS RONDAS)
+
+// imprime el resumen
+void mostrarResumenRonda(Juego &juego, int numeroRonda, int ganadorRonda){
+    std::cout << "\n" << std::string(60, '=') << std::endl;
+    std::cout << "        RESUMEN DE LA RONDA " << numeroRonda << std::endl;
+    std::cout << std::string(60, '=') << std::endl;
+    std::cout << "\n🏆 Ganador de la ronda: " << juego.jugadores[ganadorRonda].nombre << std::endl;
+
+    // Muestra los puntos que quedaron en mano (informativo)
+    std::cout << "\n📋 Puntos en mano al finalizar:" << std::endl;
+    for (int i = 0; i < juego.numJugadores; i++)
+    {
+        int puntosEnMano = calcularPuntosManos(juego.jugadores[i].mano);
+        std::cout << "  " << juego.jugadores[i].nombre << ": " << puntosEnMano << " puntos en mano" << std::endl;
+    }
+    
+    // Muestra la puntuación total (la que importa)
+    mostrarPuntosJugadores(juego);
+}
+
+// (Función 'hayGanadorFinal' eliminada, ya no se usa)
+
+// Encuentra al jugador con MENOS puntos (CAMBIO)
+int encontrarGanadorFinal (Juego &juego){
+    int ganador = 0;
+    int minPuntos = juego.jugadores[0].puntos; // Buscamos el MÍNIMO
+
+    for (int i = 1; i < juego.numJugadores; i++) 
+    {
+        if (juego.jugadores[i].puntos < minPuntos) { // Comparamos con <
+            minPuntos = juego.jugadores[i].puntos;
+            ganador = i;
+        }
+    }
+    return ganador;
+}
+
 
 #endif
